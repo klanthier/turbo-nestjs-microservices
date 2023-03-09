@@ -16,6 +16,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:smoke": "tsc ./test/performance/smoke-test.ts && k6 run ./test/performance/smoke-test.js --env API_URL=http://localhost:3001",
     "generate": "prisma generate"
   },
   "dependencies": {
@@ -24,6 +25,7 @@
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/swagger": "^6.2.1",
     "@prisma/client": "^4.11.0",
+    "@types/k6": "^0.43.2",
     "prisma-class-generator": "^0.2.5",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0"

@@ -12,7 +12,7 @@ import { ApiOkResponse } from '@nestjs/swagger';
 import { ApiNotFoundResponse, ApiTags } from '@nestjs/swagger/dist';
 import { AppService } from './app.service';
 import { PostService } from './post.service';
-import { Post as PostDto } from '../prisma/_gen/prisma-class/post';
+import { Post as PostDto, Classes } from '../prisma';
 @ApiTags()
 @Controller()
 export class AppController {
@@ -28,7 +28,7 @@ export class AppController {
   }
 
   @Get('post/:id')
-  @ApiOkResponse({ type: PostDto })
+  @ApiOkResponse({ type: Classes.Post })
   @ApiNotFoundResponse()
   async getPostById(@Param('id') id: string): Promise<PostDto> {
     const post = await this.postService.post({ id: Number(id) });
@@ -40,7 +40,7 @@ export class AppController {
   }
 
   @Get('feed')
-  @ApiOkResponse({ type: [PostDto] })
+  @ApiOkResponse({ type: [Classes.Post] })
   async getPublishedPosts(): Promise<PostDto[]> {
     const posts = await this.postService.posts({
       where: { published: true },
@@ -50,7 +50,7 @@ export class AppController {
   }
 
   @Post('post')
-  @ApiOkResponse({ type: PostDto })
+  @ApiOkResponse({ type: Classes.Post })
   async createDraft(
     @Body() postData: { title: string; content?: string },
   ): Promise<PostDto> {
@@ -62,7 +62,7 @@ export class AppController {
   }
 
   @Put('publish/:id')
-  @ApiOkResponse({ type: PostDto })
+  @ApiOkResponse({ type: Classes.Post })
   async publishPost(@Param('id') id: string): Promise<PostDto> {
     return (await this.postService.updatePost({
       where: { id: Number(id) },
@@ -71,7 +71,7 @@ export class AppController {
   }
 
   @Delete('post/:id')
-  @ApiOkResponse({ type: PostDto })
+  @ApiOkResponse({ type: Classes.Post })
   async deletePost(@Param('id') id: string): Promise<PostDto> {
     return (await this.postService.deletePost({ id: Number(id) })) as PostDto;
   }
