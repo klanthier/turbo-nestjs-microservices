@@ -1,0 +1,26 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "./_gen/prisma-client-js"
+}
+
+generator prismaClassGenerator {
+    provider = "prisma-class-generator"
+    dryRun = false
+    output   = "./_gen/prisma-class"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://postgres:admin@localhost:5432/comments?&sslmode=prefer&connection_limit=100"
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  modified_at DateTime @default(now()) @db.Timestamp(6)
+  content   String?
+  resource_id Int
+}

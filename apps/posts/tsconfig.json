@@ -1,0 +1,12 @@
+{
+  "extends": "tsconfig/nestjs.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "paths": {
+      "~prisma": ["prisma/index"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.js"],
+  "exclude": ["node_modules", "./dist/"]
+}

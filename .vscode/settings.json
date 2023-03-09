@@ -1,0 +1,4 @@
+{
+  "eslint.workingDirectories": ["apps/posts", "apps/comments"],
+  "files.eol": "\n"
+}
