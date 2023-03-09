@@ -4,6 +4,6 @@
     "outDir": "./dist",
     "baseUrl": "./"
   },
-  "include": ["**/*.ts"],
+  "include": ["**/*.ts", "**/*.js"],
   "exclude": ["node_modules", "./dist/"]
 }
