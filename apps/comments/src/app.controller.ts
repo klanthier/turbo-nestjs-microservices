@@ -10,7 +10,7 @@ import {
 import { ApiOkResponse } from '@nestjs/swagger';
 import { ApiNotFoundResponse, ApiTags } from '@nestjs/swagger/dist';
 import { AppService } from './app.service';
-import { Comment as CommentDto, Classes } from '../prisma';
+import { Comment as CommentDto, Classes } from '~prisma';
 import { CommentService } from './comment.service';
 @ApiTags()
 @Controller()
