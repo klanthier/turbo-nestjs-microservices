@@ -45,7 +45,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      - run: npm ci
+      - run: npm install
 
       - if: github.event_name == 'pull_request'
         name: Validate all commits from PR
