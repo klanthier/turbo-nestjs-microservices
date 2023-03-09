@@ -17,6 +17,9 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "test:smoke": "tsc ./test/performance/smoke-test.ts && k6 run ./test/performance/smoke-test.js --env API_URL=http://localhost:3001",
+    "test:load": "tsc ./test/performance/load-test.ts && k6 run ./test/performance/load-test.js --env API_URL=http://localhost:3001",
+    "test:stress": "tsc ./test/performance/stress-test.ts && k6 run ./test/performance/stress-test.js --env API_URL=http://localhost:3001",
+    "test:spike": "tsc ./test/performance/spike-test.ts && k6 run ./test/performance/spike-test.js --env API_URL=http://localhost:3001",
     "generate": "prisma generate"
   },
   "dependencies": {

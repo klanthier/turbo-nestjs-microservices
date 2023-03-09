@@ -31,7 +31,7 @@ export class AppController {
   @ApiOkResponse({ type: Classes.Post })
   @ApiNotFoundResponse()
   async getPostById(@Param('id') id: string): Promise<PostDto> {
-    const post = await this.postService.post({ id: Number(id) });
+    const post = await this.postService.post({ id: Number.parseInt(id) });
     if (!post) {
       throw new NotFoundException();
     }
@@ -45,6 +45,13 @@ export class AppController {
     const posts = await this.postService.posts({
       where: { published: true },
     });
+
+    return posts as PostDto[];
+  }
+  @Get('posts')
+  @ApiOkResponse({ type: [Classes.Post] })
+  async getAllPosts(): Promise<PostDto[]> {
+    const posts = await this.postService.posts({});
 
     return posts as PostDto[];
   }

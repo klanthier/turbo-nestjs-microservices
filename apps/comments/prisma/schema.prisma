@@ -14,7 +14,7 @@ generator prismaClassGenerator {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = "postgresql://postgres:admin@localhost:5432/comments?&sslmode=prefer&connection_limit=100"
 }
 
 model Comment {
