@@ -26,12 +26,12 @@
     "@commitlint/cli": "^17.4.4",
     "@commitlint/config-conventional": "^17.4.4",
     "@commitlint/cz-commitlint": "^17.4.4",
+    "commitizen": "^4.3.0",
     "eslint-config-custom": "*",
-    "prettier": "latest",
-    "turbo": "latest",
     "husky": "^8.0.3",
+    "prettier": "latest",
     "semantic-release": "^19.0.5",
-    "commitizen": "^4.3.0"
+    "turbo": "latest"
   },
   "config": {
     "commitizen": {
