@@ -1,3 +1,4 @@
+name: Performance tests for Posts
 
 on:
   workflow_run:
