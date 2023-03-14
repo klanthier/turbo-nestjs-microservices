@@ -15,6 +15,7 @@
     "build": "turbo run build",
     "test": "turbo run test",
     "dev": "turbo run dev",
+    "prepare:performance": "turbo run prepare:performance",
     "lint": "turbo run lint --force",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "prepare": "husky install",

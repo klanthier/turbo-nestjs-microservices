@@ -9,6 +9,9 @@
     "test": {
       "outputs": []
     },
+    "prepare:performance": {
+      "outputs": []
+    },
     "lint": {
       "outputs": []
     },

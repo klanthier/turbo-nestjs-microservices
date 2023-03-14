@@ -1,13 +1,10 @@
 {
   "extends": "tsconfig/nestjs.json",
   "compilerOptions": {
-    "outDir": "./dist",
     "skipLibCheck": true,
     "baseUrl": "./",
-    "paths": {
-      "~prisma": ["prisma/index"]
-    }
+    "strict": false
   },
-  "include": ["**/*.ts", "**/*.js"],
+  "include": ["test/performance/*.ts"],
   "exclude": ["node_modules", "./dist/"]
 }
