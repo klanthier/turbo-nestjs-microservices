@@ -3,7 +3,6 @@ name: CI-Posts
 on:
   push:
     branches: [klanthier/performance-testing]
-    paths: ['apps/posts/**', 'packages/**']
 
 jobs:
   smoke-test:
