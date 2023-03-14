@@ -46,13 +46,20 @@ jobs:
       - run: npm install
 
       - name: Download posts build output
-        uses: actions/download-artifact@v3
+        uses: dawidd6/action-download-artifact@v2
         with:
+          workflow: ci-posts.yaml
+          workflow_conclusion: success
           name: posts-build
+          path: apps/posts/dist
 
       - name: Compile test file
         run: |
           npx tsc apps/posts/test/performance/smoke-test.ts
+
+      - name: Prepare database
+        run: |
+          npm run migrate -- --scope=posts
 
       - name: Install k6
         run: |
