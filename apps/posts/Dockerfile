@@ -50,4 +50,4 @@ ENV NODE_ENV=${NODE_ENV}
 COPY --from=installer /app .
 
 EXPOSE 3001
-CMD ["node", "apps/posts/dist/main"]
+CMD ["node", "apps/posts/dist/src/main"]

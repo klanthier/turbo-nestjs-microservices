@@ -123,5 +123,5 @@ jobs:
 
       - name: Start server and run tests
         run: |
-          node apps/posts/dist/main & npx wait-on http://localhost:3001
+          node apps/posts/dist/src/main & npx wait-on http://localhost:3001
           ./k6 run apps/posts/test/performance/smoke-test.js
