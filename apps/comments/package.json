@@ -16,6 +16,10 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:smoke": "tsc ./test/performance/smoke-test.ts && k6 run ./test/performance/smoke-test.js --env API_URL=http://localhost:3002",
+    "test:load": "tsc ./test/performance/load-test.ts && k6 run ./test/performance/load-test.js --env API_URL=http://localhost:3002",
+    "test:stress": "tsc ./test/performance/stress-test.ts && k6 run ./test/performance/stress-test.js --env API_URL=http://localhost:3002",
+    "test:spike": "tsc ./test/performance/spike-test.ts && k6 run ./test/performance/spike-test.js --env API_URL=http://localhost:3002",
     "generate": "prisma generate"
   },
   "dependencies": {
@@ -23,10 +27,13 @@
     "@nestjs/config": "^2.3.1",
     "@nestjs/core": "^9.3.9",
     "@nestjs/platform-express": "^9.3.9",
+    "@nestjs/platform-fastify": "^9.3.9",
     "@nestjs/swagger": "^6.2.1",
     "@prisma/client": "^4.11.0",
+    "nestjs-prisma": "^0.20.0",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.2.0"
+    "rxjs": "^7.2.0",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.2.0",
@@ -36,10 +43,10 @@
     "@types/jest": "29.2.4",
     "@types/node": "18.11.18",
     "@types/supertest": "^2.0.11",
+    "@types/uuid": "^9.0.1",
     "eslint-config-custom": "*",
     "jest": "29.3.1",
     "prettier": "^2.3.2",
-    "prisma": "^4.11.0",
     "source-map-support": "^0.5.20",
     "supertest": "^6.1.3",
     "ts-jest": "29.0.3",

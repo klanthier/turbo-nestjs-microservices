@@ -4,14 +4,14 @@ import { Options } from 'k6/options';
 
 export const options: Options = {
   stages: [
+    { duration: '20s', target: 35 },
+    { duration: '50s', target: 35 },
     { duration: '20s', target: 100 },
     { duration: '50s', target: 100 },
-    { duration: '20s', target: 300 },
-    { duration: '50s', target: 300 },
-    { duration: '20s', target: 500 },
-    { duration: '50s', target: 500 },
-    { duration: '20s', target: 700 },
-    { duration: '50s', target: 700 },
+    { duration: '20s', target: 200 },
+    { duration: '50s', target: 200 },
+    { duration: '20s', target: 250 },
+    { duration: '50s', target: 250 },
     { duration: '100s', target: 0 },
   ],
 };

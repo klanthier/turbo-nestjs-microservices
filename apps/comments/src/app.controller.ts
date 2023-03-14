@@ -30,7 +30,9 @@ export class AppController {
   @ApiOkResponse({ type: Classes.Comment })
   @ApiNotFoundResponse()
   async getCommentById(@Param('id') id: string): Promise<CommentDto> {
-    const comment = await this.commentService.comment({ id: Number(id) });
+    const comment = await this.commentService.comment({
+      id: Number.parseInt(id),
+    });
     if (!comment) {
       throw new NotFoundException();
     }
@@ -40,12 +42,20 @@ export class AppController {
 
   @Get('comments/:resourceId')
   @ApiOkResponse({ type: [Classes.Comment] })
-  async getPublishedComments(
-    @Param('resourceId') resourceId: number,
+  async getCommentsFromResource(
+    @Param('resourceId') resourceId: string,
   ): Promise<CommentDto[]> {
     const comments = await this.commentService.comments({
-      where: { resource_id: resourceId },
+      where: { resource_id: Number.parseInt(resourceId) },
     });
+
+    return comments as CommentDto[];
+  }
+
+  @Get('comments')
+  @ApiOkResponse({ type: [Classes.Comment] })
+  async getAllComments(): Promise<CommentDto[]> {
+    const comments = await this.commentService.comments({});
 
     return comments as CommentDto[];
   }
@@ -53,11 +63,11 @@ export class AppController {
   @Post('comment')
   @ApiOkResponse({ type: Classes.Comment })
   async createComment(
-    @Body() commentData: { resourceId: number; content?: string },
+    @Body() commentData: { resourceId: string; content?: string },
   ): Promise<CommentDto> {
     const { resourceId, content } = commentData;
     return (await this.commentService.createComment({
-      resource_id: resourceId,
+      resource_id: Number.parseInt(resourceId),
       content,
     })) as CommentDto;
   }

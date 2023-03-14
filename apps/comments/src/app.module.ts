@@ -3,10 +3,17 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CommentService } from './comment.service';
-import { PrismaService } from './prisma.service';
+import { PrismaClient } from '~prisma';
+import { CustomPrismaModule, PrismaService } from 'nestjs-prisma';
 
 @Module({
-  imports: [ConfigModule.forRoot()],
+  imports: [
+    ConfigModule.forRoot(),
+    CustomPrismaModule.forRoot({
+      name: 'PrismaServiceComment',
+      client: new PrismaClient(),
+    }),
+  ],
   controllers: [AppController],
   providers: [AppService, CommentService, PrismaService],
 })
