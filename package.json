@@ -19,7 +19,8 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "prepare": "husky install",
     "commit": "cz",
-    "generate": "turbo run generate"
+    "generate": "turbo run generate",
+    "migrate": "turbo run migrate"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.4.4",

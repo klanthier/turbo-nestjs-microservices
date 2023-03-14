@@ -1,0 +1,20 @@
+version: '3'
+services:
+  postgres:
+    image: postgres
+    container_name: postgres
+    hostname: postgres
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: TEST_DB
+    restart: unless-stopped
+
+  app:
+    build: .
+    ports:
+      - '3001:3001'
+    depends_on:
+      - postgres

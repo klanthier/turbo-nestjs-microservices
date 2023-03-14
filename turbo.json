@@ -12,6 +12,9 @@
     "lint": {
       "outputs": []
     },
+    "migrate": {
+      "outputs": []
+    },
     "generate": {
       "outputs": []
     },
