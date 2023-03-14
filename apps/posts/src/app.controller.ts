@@ -12,7 +12,7 @@ import { ApiOkResponse } from '@nestjs/swagger';
 import { ApiNotFoundResponse, ApiTags } from '@nestjs/swagger/dist';
 import { AppService } from './app.service';
 import { PostService } from './post.service';
-import { Post as PostDto, Classes } from '../prisma';
+import { Post as PostDto, Classes } from '~prisma';
 @ApiTags()
 @Controller()
 export class AppController {
