@@ -73,7 +73,8 @@ jobs:
       postgres:
         # Docker Hub image
         image: postgres
-        # Provide the password for postgres
+        ports:
+          - 5432:5432
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -91,7 +92,7 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/TEST_DB?schema=public
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/TEST_DB?schema=public
       API_URL: http://localhost:3001
 
     steps:
