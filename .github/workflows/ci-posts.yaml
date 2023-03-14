@@ -2,11 +2,13 @@ name: CI-Posts
 
 on:
   push:
-    branches: [master]
-    paths: ['apps/posts/**', 'packages/**']
-  pull_request:
-    branches: [master]
-    paths: ['apps/posts/**', 'packages/**']
+    branches: [klanthier/performance-testing]
+#   push:
+#     branches: [master]
+#     paths: ['apps/posts/**', 'packages/**']
+#   pull_request:
+#     branches: [master]
+#     paths: ['apps/posts/**', 'packages/**']
 
 jobs:
   build:
@@ -27,6 +29,13 @@ jobs:
           cache: 'npm'
       - run: npm install
       - run: npm run build -- --scope=posts
+
+      - name: Archive build output
+        uses: actions/upload-artifact@v3
+        with:
+          name: posts-build
+          path: |
+            apps/posts/dist
 
   test:
     strategy:

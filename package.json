@@ -31,7 +31,8 @@
     "husky": "^8.0.3",
     "prettier": "latest",
     "semantic-release": "^19.0.5",
-    "turbo": "latest"
+    "turbo": "latest",
+    "wait-on": "^7.0.1"
   },
   "config": {
     "commitizen": {
