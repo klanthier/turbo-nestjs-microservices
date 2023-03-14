@@ -55,7 +55,7 @@ jobs:
 
       - name: Compile test file
         run: |
-          npx tsc apps/posts/test/performance/smoke-test.ts
+          npm run prepare:performance -- --scope=posts
 
       - name: Prepare database
         run: |
