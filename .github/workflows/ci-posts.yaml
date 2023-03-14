@@ -71,15 +71,13 @@ jobs:
     services:
       # Label used to access the service container
       postgres:
-        # Docker Hub image
         image: postgres
-        ports:
-          - 5432:5432
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: TEST_DB
-        # Set health checks to wait until postgres has started
+          POSTGRES_PASSWORD: admin
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -92,7 +90,7 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      DATABASE_URL: postgres://postgres:postgres@postgres:5432/TEST_DB?schema=public
+      DATABASE_URL: postgresql://postgres:admin@localhost:5432/postgres?schema=posts
       API_URL: http://localhost:3001
 
     steps:
