@@ -20,7 +20,8 @@
     "test:load": "tsc ./test/performance/load-test.ts && k6 run ./test/performance/load-test.js --env API_URL=http://localhost:3002",
     "test:stress": "tsc ./test/performance/stress-test.ts && k6 run ./test/performance/stress-test.js --env API_URL=http://localhost:3002",
     "test:spike": "tsc ./test/performance/spike-test.ts && k6 run ./test/performance/spike-test.js --env API_URL=http://localhost:3002",
-    "generate": "prisma generate"
+    "generate": "prisma generate",
+    "postinstall": "npm run generate"
   },
   "dependencies": {
     "@nestjs/common": "^9.3.9",

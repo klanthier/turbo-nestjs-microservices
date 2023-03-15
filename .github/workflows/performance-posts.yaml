@@ -1,0 +1,71 @@
+name: Performance tests for Posts
+
+on:
+  workflow_run:
+    workflows: ['CI-Posts']
+    types:
+      - completed
+
+jobs:
+  smoke-test:
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres
+        # Provide the password for postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: TEST_DB
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/TEST_DB?schema=public
+      API_URL: http://localhost:3001
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - run: npm install
+
+      - name: Download posts build output
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: ci-posts.yaml
+          workflow_conclusion: success
+          name: posts-build
+          path: apps/posts/dist
+
+      - name: Compile test file
+        run: |
+          npm run prepare:performance -- --scope=posts
+
+      - name: Prepare database
+        run: |
+          npm run migrate -- --scope=posts
+
+      - name: Install k6
+        run: |
+          curl https://github.com/loadimpact/k6/releases/download/v0.26.2/k6-v0.26.2-linux64.tar.gz -L | tar xvz --strip-components 1
+
+      - name: Start server and run tests
+        run: |
+          node apps/posts/dist/main & npx wait-on http://localhost:3001
+          ./k6 run apps/posts/test/performance/smoke-test.js
