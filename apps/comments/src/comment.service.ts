@@ -1,14 +1,18 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from './prisma.service';
-import { Comment, Prisma } from '~prisma';
+import { Injectable, Inject } from '@nestjs/common';
+import { Comment, Prisma, PrismaClient } from '~prisma';
+import { CustomPrismaService } from 'nestjs-prisma';
+
 @Injectable()
 export class CommentService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    @Inject('PrismaServiceComment')
+    private prisma: CustomPrismaService<PrismaClient>,
+  ) {}
 
   async comment(
     commentWhereUniqueInput: Prisma.CommentWhereUniqueInput,
   ): Promise<Comment | null> {
-    return this.prisma.comment.findUnique({
+    return this.prisma.client.comment.findUnique({
       where: commentWhereUniqueInput,
     });
   }
@@ -21,7 +25,7 @@ export class CommentService {
     orderBy?: Prisma.CommentOrderByWithRelationInput;
   }): Promise<Comment[]> {
     const { skip, take, cursor, where, orderBy } = parameters;
-    return this.prisma.comment.findMany({
+    return this.prisma.client.comment.findMany({
       skip,
       take,
       cursor,
@@ -31,7 +35,7 @@ export class CommentService {
   }
 
   async createComment(data: Prisma.CommentCreateInput): Promise<Comment> {
-    return this.prisma.comment.create({
+    return this.prisma.client.comment.create({
       data,
     });
   }
@@ -41,14 +45,14 @@ export class CommentService {
     data: Prisma.CommentUpdateInput;
   }): Promise<Comment> {
     const { data, where } = parameters;
-    return this.prisma.comment.update({
+    return this.prisma.client.comment.update({
       data,
       where,
     });
   }
 
   async deleteComment(where: Prisma.CommentWhereUniqueInput): Promise<Comment> {
-    return this.prisma.comment.delete({
+    return this.prisma.client.comment.delete({
       where,
     });
   }
