@@ -7,14 +7,19 @@ import {
   Param,
   Post,
   Put,
+  UseInterceptors,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { ApiNotFoundResponse, ApiTags } from '@nestjs/swagger/dist';
 import { AppService } from './app.service';
 import { PostService } from './post.service';
 import { Post as PostDto, Classes } from '../prisma';
+import { HttpCacheInterceptor } from './middleware/http-cache.interceptor';
+import { ClientKeyGuard } from './guards/client-key.guard';
 @ApiTags()
 @Controller()
+@UseInterceptors(HttpCacheInterceptor)
 export class AppController {
   constructor(
     private readonly appService: AppService,
@@ -40,6 +45,7 @@ export class AppController {
   }
 
   @Get('feed')
+  @UseGuards(ClientKeyGuard)
   @ApiOkResponse({ type: [Classes.Post] })
   async getPublishedPosts(): Promise<PostDto[]> {
     const posts = await this.postService.posts({
@@ -58,8 +64,9 @@ export class AppController {
 
   @Post('post')
   @ApiOkResponse({ type: Classes.Post })
+  @UseGuards(ClientKeyGuard)
   async createDraft(
-    @Body() postData: { title: string; content?: string },
+    @Body() postData: { title: string; content?: string; clientKey: string },
   ): Promise<PostDto> {
     const { title, content } = postData;
     return (await this.postService.createPost({
