@@ -9,12 +9,13 @@ import { HttpCacheInterceptor } from './middleware/http-cache.interceptor';
 import { PostService } from './post.service';
 import * as redisStore from 'cache-manager-redis-store';
 import { PrismaClient } from '~prisma';
+import { DatabaseService } from './database.service';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     CustomPrismaModule.forRoot({
-      name: 'PrismaServicePost',
+      name: 'database',
       client: new PrismaClient(),
     }),
     CacheModule.register<RedisClientOptions>({
@@ -27,13 +28,6 @@ import { PrismaClient } from '~prisma';
     }),
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    PostService,
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: HttpCacheInterceptor,
-    },
-  ],
+  providers: [AppService, PostService, DatabaseService],
 })
 export class AppModule {}

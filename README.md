@@ -2,6 +2,8 @@ Please re-install the latest version of NVM: https://github.com/coreybutler/nvm-
 Then install node v 16.19.1
 You will need NPM v8.19.3 to run this project
 
+WARNING: ROW LEVEL SECURITY WILL ONLY WORK ON YOUR NON-ADMIN DATABASE USER. YOU MUST CREATE A NEW USER OTHER THAN THE PRINCIPAL ONE OTHERWISE NO DATA WILL BE HIDDEN
+
 ### Build
 
 To build all apps and packages, run the following command:

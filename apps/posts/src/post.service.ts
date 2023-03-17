@@ -1,18 +1,13 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { CustomPrismaService } from 'nestjs-prisma';
-import { Post, Prisma, PrismaClient } from '~prisma';
+import { Injectable } from '@nestjs/common';
+import { Prisma } from '~prisma';
+import { DatabaseService } from './database.service';
 
 @Injectable()
 export class PostService {
-  constructor(
-    @Inject('PrismaServicePost')
-    private prisma: CustomPrismaService<PrismaClient>,
-  ) {}
+  constructor(private readonly databaseService: DatabaseService) {}
 
-  async post(
-    postWhereUniqueInput: Prisma.PostWhereUniqueInput,
-  ): Promise<Post | null> {
-    return this.prisma.client.post.findUnique({
+  async post(postWhereUniqueInput: Prisma.PostWhereUniqueInput) {
+    return this.databaseService.client.post.findUniqueOrThrow({
       where: postWhereUniqueInput,
     });
   }
@@ -23,9 +18,9 @@ export class PostService {
     cursor?: Prisma.PostWhereUniqueInput;
     where?: Prisma.PostWhereInput;
     orderBy?: Prisma.PostOrderByWithRelationInput;
-  }): Promise<Post[]> {
-    const { skip, take, cursor, where, orderBy } = parameters;
-    return this.prisma.client.post.findMany({
+  }) {
+    const { skip = 0, take = 20, cursor, where, orderBy } = parameters;
+    return this.databaseService.client.post.findMany({
       skip,
       take,
       cursor,
@@ -34,8 +29,8 @@ export class PostService {
     });
   }
 
-  async createPost(data: Prisma.PostCreateInput): Promise<Post> {
-    return this.prisma.client.post.create({
+  async createPost(data: Prisma.PostCreateInput) {
+    return this.databaseService.client.post.create({
       data,
     });
   }
@@ -43,16 +38,16 @@ export class PostService {
   async updatePost(parameters: {
     where: Prisma.PostWhereUniqueInput;
     data: Prisma.PostUpdateInput;
-  }): Promise<Post> {
+  }) {
     const { data, where } = parameters;
-    return this.prisma.client.post.update({
+    return this.databaseService.client.post.update({
       data,
       where,
     });
   }
 
-  async deletePost(where: Prisma.PostWhereUniqueInput): Promise<Post> {
-    return this.prisma.client.post.delete({
+  async deletePost(where: Prisma.PostWhereUniqueInput) {
+    return this.databaseService.client.post.delete({
       where,
     });
   }

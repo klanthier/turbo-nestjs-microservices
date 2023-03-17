@@ -7,19 +7,19 @@ import {
   Param,
   Post,
   Put,
-  UseInterceptors,
   UseGuards,
 } from '@nestjs/common';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { ApiNotFoundResponse, ApiTags } from '@nestjs/swagger/dist';
+import { Classes, Post as PostDto } from '../prisma';
 import { AppService } from './app.service';
-import { PostService } from './post.service';
-import { Post as PostDto, Classes } from '../prisma';
-import { HttpCacheInterceptor } from './middleware/http-cache.interceptor';
+import { ClientKey } from './guards/client-key.decorator';
 import { ClientKeyGuard } from './guards/client-key.guard';
+import { PostService } from './post.service';
+
 @ApiTags()
 @Controller()
-@UseInterceptors(HttpCacheInterceptor)
+@UseGuards(ClientKeyGuard)
 export class AppController {
   constructor(
     private readonly appService: AppService,
@@ -45,49 +45,42 @@ export class AppController {
   }
 
   @Get('feed')
-  @UseGuards(ClientKeyGuard)
   @ApiOkResponse({ type: [Classes.Post] })
   async getPublishedPosts(): Promise<PostDto[]> {
-    const posts = await this.postService.posts({
+    return this.postService.posts({
       where: { published: true },
     });
-
-    return posts as PostDto[];
   }
   @Get('posts')
   @ApiOkResponse({ type: [Classes.Post] })
   async getAllPosts(): Promise<PostDto[]> {
-    const posts = await this.postService.posts({});
-
-    return posts as PostDto[];
+    return this.postService.posts({});
   }
 
   @Post('post')
   @ApiOkResponse({ type: Classes.Post })
-  @UseGuards(ClientKeyGuard)
   async createDraft(
-    @Body() postData: { title: string; content?: string; clientKey: string },
+    @Body() postData: Pick<Classes.Post, 'content' | 'title' | 'client_key'>,
+    @ClientKey() key: string,
   ): Promise<PostDto> {
-    const { title, content, clientKey } = postData;
-    return (await this.postService.createPost({
-      title,
-      content,
-      client_key: clientKey,
-    })) as PostDto;
+    return this.postService.createPost({
+      ...postData,
+      client_key: key,
+    });
   }
 
   @Put('publish/:id')
   @ApiOkResponse({ type: Classes.Post })
   async publishPost(@Param('id') id: string): Promise<PostDto> {
-    return (await this.postService.updatePost({
+    return this.postService.updatePost({
       where: { id: Number(id) },
       data: { published: true },
-    })) as PostDto;
+    });
   }
 
   @Delete('post/:id')
   @ApiOkResponse({ type: Classes.Post })
   async deletePost(@Param('id') id: string): Promise<PostDto> {
-    return (await this.postService.deletePost({ id: Number(id) })) as PostDto;
+    return this.postService.deletePost({ id: Number(id) });
   }
 }
