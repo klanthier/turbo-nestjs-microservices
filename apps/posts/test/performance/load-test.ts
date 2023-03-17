@@ -14,10 +14,15 @@ export const options: Options = {
 };
 
 export default () => {
-  const postResponse = post(`${__ENV.API_URL}/post`, {
-    title: 'post title',
-    content: 'the content',
-  });
+  const postResponse = post(
+    `${__ENV.API_URL}/post`,
+    {
+      title: 'post title',
+      content: 'the content',
+      clientKey: '123',
+    },
+    { headers: { 'client-key': '123' } },
+  );
 
   check(postResponse, {
     'created post successfully': (response) => {
@@ -28,7 +33,9 @@ export default () => {
   if (postResponse.body && typeof postResponse.body === 'string') {
     const result = JSON.parse(postResponse.body);
     // read the post
-    const onePostResponse = get(`${__ENV.API_URL}/post/${result.id}`);
+    const onePostResponse = get(`${__ENV.API_URL}/post/${result.id}`, {
+      headers: { 'client-key': '123' },
+    });
 
     check(onePostResponse, {
       'got post data': (response) => {
@@ -37,7 +44,13 @@ export default () => {
     });
 
     // publish the post
-    const publishPostResponse = put(`${__ENV.API_URL}/publish/${result.id}`);
+    const publishPostResponse = put(
+      `${__ENV.API_URL}/publish/${result.id}`,
+      undefined,
+      {
+        headers: { 'client-key': '123' },
+      },
+    );
     check(publishPostResponse, {
       'got published post data': (response) => {
         return response.status === 200;

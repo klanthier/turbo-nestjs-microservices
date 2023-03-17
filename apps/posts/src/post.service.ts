@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'nestjs-prisma';
-import { Post, Prisma } from '~prisma';
+import { CustomPrismaService } from 'nestjs-prisma';
+import { Post, Prisma, PrismaClient } from '~prisma';
 
 @Injectable()
 export class PostService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: CustomPrismaService<PrismaClient>) {}
 
   async post(
     postWhereUniqueInput: Prisma.PostWhereUniqueInput,
   ): Promise<Post | null> {
-    return this.prisma.post.findUnique({
+    return this.prisma.client.post.findUnique({
       where: postWhereUniqueInput,
     });
   }
@@ -22,7 +22,7 @@ export class PostService {
     orderBy?: Prisma.PostOrderByWithRelationInput;
   }): Promise<Post[]> {
     const { skip, take, cursor, where, orderBy } = parameters;
-    return this.prisma.post.findMany({
+    return this.prisma.client.post.findMany({
       skip,
       take,
       cursor,
@@ -32,7 +32,7 @@ export class PostService {
   }
 
   async createPost(data: Prisma.PostCreateInput): Promise<Post> {
-    return this.prisma.post.create({
+    return this.prisma.client.post.create({
       data,
     });
   }
@@ -42,14 +42,14 @@ export class PostService {
     data: Prisma.PostUpdateInput;
   }): Promise<Post> {
     const { data, where } = parameters;
-    return this.prisma.post.update({
+    return this.prisma.client.post.update({
       data,
       where,
     });
   }
 
   async deletePost(where: Prisma.PostWhereUniqueInput): Promise<Post> {
-    return this.prisma.post.delete({
+    return this.prisma.client.post.delete({
       where,
     });
   }

@@ -68,10 +68,11 @@ export class AppController {
   async createDraft(
     @Body() postData: { title: string; content?: string; clientKey: string },
   ): Promise<PostDto> {
-    const { title, content } = postData;
+    const { title, content, clientKey } = postData;
     return (await this.postService.createPost({
       title,
       content,
+      client_key: clientKey,
     })) as PostDto;
   }
 

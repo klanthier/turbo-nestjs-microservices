@@ -7,5 +7,5 @@ export const options: Options = {
 };
 
 export default () => {
-  get(`${__ENV.API_URL}/feed`);
+  get(`${__ENV.API_URL}/feed`, { headers: { 'client-key': '123' } });
 };

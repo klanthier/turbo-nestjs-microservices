@@ -1,0 +1,10 @@
+{
+  "extends": "tsconfig/nestjs.json",
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "baseUrl": "./",
+    "strict": false
+  },
+  "include": ["test/performance/*.ts"],
+  "exclude": ["node_modules", "./dist/"]
+}
