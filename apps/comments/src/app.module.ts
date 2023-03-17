@@ -4,7 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CommentService } from './comment.service';
 import { PrismaClient } from '~prisma';
-import { CustomPrismaModule, PrismaService } from 'nestjs-prisma';
+import { CustomPrismaModule } from 'nestjs-prisma';
 
 @Module({
   imports: [
@@ -15,6 +15,6 @@ import { CustomPrismaModule, PrismaService } from 'nestjs-prisma';
     }),
   ],
   controllers: [AppController],
-  providers: [AppService, CommentService, PrismaService],
+  providers: [AppService, CommentService],
 })
 export class AppModule {}

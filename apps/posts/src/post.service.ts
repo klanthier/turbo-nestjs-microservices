@@ -1,10 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { CustomPrismaService } from 'nestjs-prisma';
 import { Post, Prisma, PrismaClient } from '~prisma';
 
 @Injectable()
 export class PostService {
-  constructor(private prisma: CustomPrismaService<PrismaClient>) {}
+  constructor(
+    @Inject('PrismaServicePost')
+    private prisma: CustomPrismaService<PrismaClient>,
+  ) {}
 
   async post(
     postWhereUniqueInput: Prisma.PostWhereUniqueInput,
