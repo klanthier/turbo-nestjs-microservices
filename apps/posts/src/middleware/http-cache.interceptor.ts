@@ -5,10 +5,24 @@ import {
   ExecutionContext,
   CACHE_KEY_METADATA,
 } from '@nestjs/common';
+import { getKeysFromRequest } from 'src/guards/client-key.decorator';
+import { MD5 } from 'object-hash';
+import { InjectRedis } from '@liaoliaots/nestjs-redis/dist/redis/common';
+import Redis from 'ioredis';
 
 @Injectable()
 export class HttpCacheInterceptor extends CacheInterceptor {
-  protected cachedRoutes = new Map();
+  constructor(
+    cacheManager: any,
+    reflector: any,
+    @InjectRedis('reverse-client-key-map')
+    private readonly reverseClientKeyMap: Redis,
+    @InjectRedis('service-cache')
+    private readonly serviceCache: Redis,
+  ) {
+    super(cacheManager, reflector);
+  }
+
   trackBy(context: ExecutionContext): string | undefined {
     const request = context.switchToHttp().getRequest();
     // if there is no request, the incoming request is graphql, therefore bypass response caching.
@@ -16,8 +30,20 @@ export class HttpCacheInterceptor extends CacheInterceptor {
     if (!request) {
       return undefined;
     }
+
+    // Pattern {route}:{hashed client key}:{hashed search parameters (optional)}
+    // Example /post:81234asbdsa:8709dfgsd
+
     const { httpAdapter } = this.httpAdapterHost;
     const isHttpApp = httpAdapter && !!httpAdapter.getRequestMethod;
+    const clientKeys = getKeysFromRequest(request);
+    const routePrefix = httpAdapter.getRequestUrl(request).split('?')[0];
+    const routeParameters = httpAdapter.getRequestUrl(request).split('?')[1];
+    const hashedClientKeys = MD5(clientKeys);
+    const cachingKey = `${routePrefix}:${hashedClientKeys}${
+      routeParameters ? `:${MD5(routeParameters)}` : ''
+    }`;
+    const joinedKeys = clientKeys.map((x) => `{${x}}`).join(',');
     const cacheMetadata = this.reflector.get(
       CACHE_KEY_METADATA,
       context.getHandler(),
@@ -26,31 +52,76 @@ export class HttpCacheInterceptor extends CacheInterceptor {
     if (!isHttpApp || cacheMetadata) {
       return cacheMetadata;
     }
+
+    // If we do not have a get request, we want to invalidate all resources that will match our
+    // Routeprefix (AND) including all matching joined keys reversed hashes
+    // this will take care of trickling-up effects from different viewpoints
     const isGetRequest = httpAdapter.getRequestMethod(request) === 'GET';
     if (!isGetRequest) {
       setTimeout(async () => {
-        for (const values of this.cachedRoutes.values()) {
-          for (const value of values) {
-            // you don't need to worry about the cache manager as you are extending their interceptor which is using caching manager as you've seen earlier.
-            await this.cacheManager.del(value);
-          }
-        }
+        this.scanAndInvalidateByClientKey(routePrefix, joinedKeys);
       }, 0);
-      return undefined;
     }
-    // to always get the base url of the incoming get request url.
-    const key = httpAdapter.getRequestUrl(request).split('?')[0];
-    if (
-      this.cachedRoutes.has(key) &&
-      !this.cachedRoutes.get(key).includes(httpAdapter.getRequestUrl(request))
-    ) {
-      this.cachedRoutes.set(key, [
-        ...this.cachedRoutes.get(key),
-        httpAdapter.getRequestUrl(request),
-      ]);
-      return httpAdapter.getRequestUrl(request);
-    }
-    this.cachedRoutes.set(key, [httpAdapter.getRequestUrl(request)]);
-    return httpAdapter.getRequestUrl(request);
+
+    // Verify if the existing joined key exists in our reverse map
+    // We need it to further invalidate it if it did not exist
+    this.reverseClientKeyMap
+      .get(joinedKeys)
+      .then((keys) => {
+        if (!keys) {
+          this.reverseClientKeyMap.set(joinedKeys, hashedClientKeys);
+        }
+        return undefined;
+      })
+      .catch(() => {
+        console.log('opops');
+      });
+
+    return cachingKey;
+  }
+  private deleteServiceKeysByPattern(pattern: string) {
+    const stream = this.serviceCache.scanStream({
+      match: pattern,
+    });
+
+    stream.on('data', (keys) => {
+      // `keys` is an array of strings representing key names
+      if (keys.length > 0) {
+        const pipeline = this.serviceCache.pipeline();
+        keys.forEach((key: string) => {
+          pipeline.del(key);
+        });
+        pipeline.exec();
+      }
+    });
+    stream.on('end', function () {
+      console.log('finished deleting');
+    });
+  }
+
+  private scanAndInvalidateByClientKey(routePrefix: string, key: string) {
+    const stream = this.reverseClientKeyMap.scanStream({
+      match: `*${key}*`,
+    });
+
+    stream.on('data', (keys: string[]) => {
+      if (keys.length > 0) {
+        keys.forEach((key) => {
+          this.reverseClientKeyMap
+            .get(key)
+            .then((reversedHash) => {
+              return this.deleteServiceKeysByPattern(
+                `${routePrefix}*${reversedHash}*`,
+              );
+            })
+            .catch(() => {
+              console.log('exception occured while deleting keys');
+            });
+        });
+      }
+    });
+    stream.on('end', function () {
+      console.log('done');
+    });
   }
 }
